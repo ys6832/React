@@ -1,0 +1,144 @@
+1. Props
+   - 컴포넌트에서 사용 할 데이터 중 변동되지 않는 데이터를 다룰 떄 사용
+   - {this.props.name},{this.props.chlidren} 형식
+   
+[예시1]  class Codelab extends React.Component{
+         render(){
+           let text = "Hi i am codelab";
+           let style = {
+             //주의할점 : 기존 Script 에서 썼던 style 명칭과는 다를수 있음 
+             backgroundColor:'aqua'
+           };
+
+           return(
+             <div style={style}>{text}</div>
+           );
+         }
+       }
+
+       class App extends React.Component{
+         render(){
+           return(
+             <Codelab></Codelab>
+           );
+         }
+       }
+
+       ReactDOM.render(<App/>, document.getElementById("ElementId값"));  
+       
+       출력값 => Hi i am codelab
+       
+ [예시2]  class Codelab extends React.Component{
+            render(){
+                return(
+                   <div>
+                    <h1>Hllo {this.props.name}</h1>
+                    <div>{this.props.children}</div>
+                   </div>
+                );
+             }
+	        }
+
+	     class App extends React.Component{
+          render(){
+             return(
+                <Codelab name={this.props.name}>{this.props.children}</Codelab>
+             );
+          }
+	     }
+         
+       ReactDOM.render(<App name="lys">안녕</App>,document.getElementById("ElementId값"));
+
+       출력값 =>  Hllo lys
+                 안녕
+                 
+ -  기본값 설정 
+    * 변수 타입 
+      문자 : React.PropTypes.string
+      숫자 : React.PropTypes.number
+      필수 : React.PropTypes.any.isRequired
+    
+     참고 : https://facebook.github.io/react/docs/components-and-props.html
+     
+    [예시]  class Codelab extends React.Component{
+               render(){
+                 return(
+                    <div>
+                     <h1>{this.props.name} {this.props.number} {this.props.children}</h1>
+                   </div>
+                 );
+               }
+            }
+
+          Codelab.defaultProps = {
+              name: "Unknown"
+           };
+           // 변수의 형을 정함
+           Codelab.propTypes = {
+               number: React.PropTypes.number.isRequired, // 필수값 처리
+               name: React.PropTypes.string
+           }
+           
+           class App extends React.Component {
+               render() {
+                   return (
+                       <Codelab name={this.props.name} number={this.props.number}>{this.props.children}</Codelab>
+                   );
+               }
+           }
+
+           ReactDOM.render(
+               <App number={555}> children : ggg </App>, document.getElementById("ElementId값")
+           );
+           
+           출력값 => Unknown 555 children : ggg
+           
+ 2. State  
+    - 유동적인 데이터를 다룰때 사용
+    - 생성자에서 초기값 설정을 해줘야됨
+    - 값 수정시 this.setState({...}), 렌더링 된 다음엔 this.sate = 를 절대 사용하지 말것 (강제로 수정하는 꼴이며 성능저하됨)
+     
+[예시] class Counter extends React.Component{
+         constructor(변수) {
+           //컴포넌트가 먼저 실행될수 있도록 해줌(초기값세팅 과 변수값을 가장 먼저 가져올수있도록)
+           super(변수);
+           //초기값 설정 
+           this.state = {
+             value:0
+           };
+         //this 값을 알지 못하기 때문에 bind 를 해줌. 
+         //onClick 바로 bind 해도 되지만 constructor에서 해주는 것이 보기 좋음
+         this.handleClick = this.handleClick.bind(this);
+       }
+       //click method
+       handleClick(){
+         //state value 값 수정 
+         // 프로세스를 통하여 값이 변경된 후 랜더링을 다시함
+         this.setState({
+           value:this.state.value + 1
+         });
+         
+         //작동은 하지만 사용하지 말라고 한 문법 
+         //this.state.value = this.state.value + 1;
+         //this.forceUpdate();
+       }
+
+       render() {
+         return(
+           <div>
+             <h2>{this.state.value}</h2>
+             <button onClick={this.handleClick}>Press Me</button>
+           </div>
+         )
+       }
+   }
+
+     class App extends React.Component {
+       render() {
+         return (
+           <Counter></Counter>
+         );
+       }
+     };
+
+     ReactDOM.render(<App></App>,document.getElementById("ElementId값"));
